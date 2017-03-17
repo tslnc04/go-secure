@@ -48,11 +48,15 @@ func CreateDataLocal(data, localsalt string) SecureData, error {
 	return newsecure
 }
 
-func CreateData(data, localsalt string) SecureData, error {
+/* CreateData
+ * Creates and uses data-specific salt
+ * Doesn't use local salt
+ */
+func CreateData(data string) SecureData, error {
 	newsecure := SecureData{Salt: randomString(128)}
 
 	h := sha512.New()
-	io.WriteString(h, data + localsalt)
+	io.WriteString(h, data)
 
 	ciphered, err := bcrypt.GenerateFromPassword(append(h.Sum(nil), []byte(newsecure.Salt)...), 10)
 	if err != nil {
