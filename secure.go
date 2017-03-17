@@ -13,7 +13,7 @@ func Encrypt(text string, pass string) (string, error) {
 
         encBuf   := bytes.NewBuffer(nil)
         w, err   := armor.Encode(encBuf, "PGP SIGNATURE", nil)
-        if err != nil {return nil, err}
+        if err != nil {return "", err}
 
         pt, err  := openpgp.SymmetricallyEncrypt(w, password, nil, nil)
         if err != nil {return nil, err}
