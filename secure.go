@@ -50,7 +50,7 @@ func CreateDataLocal(data, localsalt string) SecureData, error {
 
 /* CreateData
  * Creates and uses data-specific salt
- * Doesn't use local salt
+ * Doesn't use local salt, but not recommended as it's less secure
  */
 func CreateData(data string) SecureData, error {
 	newsecure := SecureData{Salt: randomString(128)}
