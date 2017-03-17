@@ -8,6 +8,10 @@ import (
 	"io/ioutil"
 )
 
+/*
+ *
+ *
+ */
 type SecureData struct {
     Ciphered string `json:"ciphered"`
     Salt     string `json:"salt"`
