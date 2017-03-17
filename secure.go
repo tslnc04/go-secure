@@ -13,8 +13,8 @@ import (
  * Salt stores data-specific salt
  */
 type SecureData struct {
-    Ciphered string `json:"ciphered"`
-    Salt     string `json:"salt"`
+    Secured string `json:"ciphered"`
+    Salt    string `json:"salt"`
 }
 
 func randomString(length int) string {
@@ -43,7 +43,7 @@ func CreateDataLocal(data, localsalt string) SecureData, error {
         return nil, err
     }
 
-	newsecure.Ciphered = string(ciphered)
+	newsecure.Secured = string(ciphered)
 
 	return newsecure
 }
