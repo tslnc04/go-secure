@@ -28,7 +28,7 @@ func Encrypt(text string, pass string) (string, error) {
         return encBuf.String(), nil
 }
 
-func Decrypt(coded string, pass string) string, error {
+func Decrypt(coded string, pass string) (string, error) {
         password    := []byte(pass)
 
         decBuf      := bytes.NewBufferString(coded)
