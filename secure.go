@@ -9,12 +9,12 @@ import (
         "errors"
 )
 
-func Encrypt(text string, pass string) string {
+func Encrypt(text string, pass string) (string, err) {
         password := []byte(pass)
 
         encBuf   := bytes.NewBuffer(nil)
         w, err   := armor.Encode(encBuf, "PGP SIGNATURE", nil)
-        if err != nil {panic(err)}
+        if err != nil {return nil, err}
 
         pt, err  := openpgp.SymmetricallyEncrypt(w, password, nil, nil)
         if err != nil {panic(err)}
