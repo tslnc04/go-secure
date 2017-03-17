@@ -1,69 +1,53 @@
 package secure
 
 import (
-    "crypto/rand"
-	"crypto/sha512"
-	"golang.org/x/crypto/bcrypt"
-	"io"
-	"io/ioutil"
+        "bytes"
+        "golang.org/x/crypto/openpgp"
+        "golang.org/x/crypto/openpgp/armor"
+        "fmt"
+        "io/ioutil"
+        "errors"
 )
 
-/* SecureData
- * Ciphered stored secured data
- * Salt stores data-specific salt
- */
-type SecureData struct {
-    Secured string `json:"ciphered"`
-    Salt    string `json:"salt"`
+func Encrypt(text string, pass string) string {
+        password := []byte(pass)
+
+        encBuf   := bytes.NewBuffer(nil)
+        w, err   := armor.Encode(encBuf, "PGP SIGNATURE", nil)
+        if err != nil {panic(err)}
+
+        pt, err  := openpgp.SymmetricallyEncrypt(w, password, nil, nil)
+        if err != nil {panic(err)}
+
+        message  := []byte(text)
+        _, err    = pt.Write(message)
+
+        pt.Close()
+        w.Close()
+
+        return encBuf.String()
 }
 
-func randomString(length int) string {
-	b := make([]byte, length)
+func Decrypt(coded string, pass string) string {
+        password    := []byte(pass)
 
-	_, err := rand.Read(b)
-	if err != nil {
-		panic(err)
-	}
+        decBuf      := bytes.NewBufferString(coded)
+        result, err := armor.Decode(decBuf)
+        if err != nil {panic(err)}
 
-	return string(b)
-}
+        prompted    := false
+        md, err     := openpgp.ReadMessage(result.Body, nil, func(keys []openpgp.Key, symmetric bool) ([]byte, error) {
+                if prompted {
+                        return nil, errors.New("Couldn't Decrypt Data with Password")
+                } else {
+                        prompted = true
+                }
+                return password, nil
+        }, nil)
+        if err != nil {panic(err)}
 
-/* CreateDataLocal
- * Creates and uses data-specific salt
- * Also uses local salt given. Should be stored on machine.
- */
-func CreateDataLocal(data, localsalt string) SecureData, error {
-	newsecure := SecureData{Salt: randomString(128)}
+        dec, err    := ioutil.ReadAll(md.UnverifiedBody)
+        if err != nil {panic(err)}
 
-	h := sha512.New()
-	io.WriteString(h, data + localsalt)
-
-	ciphered, err := bcrypt.GenerateFromPassword(append(h.Sum(nil), []byte(newsecure.Salt)...), 10)
-	if err != nil {
-        return nil, err
-    }
-
-	newsecure.Secured = string(ciphered)
-
-	return newsecure, nil
-}
-
-/* CreateData
- * Creates and uses data-specific salt
- * Doesn't use local salt, but not recommended as it's less secure
- */
-func CreateData(data string) SecureData, error {
-	newsecure := SecureData{Salt: randomString(128)}
-
-	h := sha512.New()
-	io.WriteString(h, data)
-
-	ciphered, err := bcrypt.GenerateFromPassword(append(h.Sum(nil), []byte(newsecure.Salt)...), 10)
-	if err != nil {
-        return nil, err
-    }
-
-	newsecure.Ciphered = string(ciphered)
-
-	return newsecure, nil
+        return string(dec)
 }
