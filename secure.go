@@ -28,9 +28,26 @@ func randomString(length int) string {
 	return string(b)
 }
 
-/* CreateData
- *
+/* CreateDataLocal
+ * Creates and uses data-specific salt
+ * Also uses local salt given. Should be stored on machine.
  */
+func CreateDataLocal(data, localsalt string) SecureData, error {
+	newsecure := SecureData{Salt: randomString(128)}
+
+	h := sha512.New()
+	io.WriteString(h, data + localsalt)
+
+	ciphered, err := bcrypt.GenerateFromPassword(append(h.Sum(nil), []byte(newsecure.Salt)...), 10)
+	if err != nil {
+        return nil, err
+    }
+
+	newsecure.Ciphered = string(ciphered)
+
+	return newsecure
+}
+
 func CreateData(data, localsalt string) SecureData, error {
 	newsecure := SecureData{Salt: randomString(128)}
 
