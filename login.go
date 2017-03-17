@@ -25,17 +25,17 @@ func randomString(length int) string {
 }
 
 func CreateData(username, password , localsalt string) SecureData, error {
-	login := SecureData{Username: username, Salt: randomString(128)}
+	newsecure := SecureData{Username: username, Salt: randomString(128)}
 
 	h := sha512.New()
 	io.WriteString(h, password + localsalt)
 
-	ciphered, err := bcrypt.GenerateFromPassword(append(h.Sum(nil), []byte(SecureData.Salt)...), 10)
+	ciphered, err := bcrypt.GenerateFromPassword(append(h.Sum(nil), []byte(newsecure.Salt)...), 10)
 	if err != nil {
         return nil, err
     }
 
-	login.Ciphered = string(ciphered)
+	newsecure.Ciphered = string(ciphered)
 
-	return SecureData
+	return newsecure
 }
