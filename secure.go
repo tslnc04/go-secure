@@ -16,7 +16,7 @@ func Encrypt(text string, pass string) (string, error) {
         if err != nil {return "", err}
 
         pt, err  := openpgp.SymmetricallyEncrypt(w, password, nil, nil)
-        if err != nil {return nil, err}
+        if err != nil {return "", err}
 
         message  := []byte(text)
         _, err    = pt.Write(message)
@@ -32,7 +32,7 @@ func Decrypt(coded string, pass string) (string, error) {
 
         decBuf      := bytes.NewBufferString(coded)
         result, err := armor.Decode(decBuf)
-        if err != nil {return nil, err}
+        if err != nil {return "", err}
 
         prompted    := false
         md, err     := openpgp.ReadMessage(result.Body, nil, func(keys []openpgp.Key, symmetric bool) ([]byte, error) {
@@ -43,10 +43,10 @@ func Decrypt(coded string, pass string) (string, error) {
                 }
                 return password, nil
         }, nil)
-        if err != nil {return nil, err}
+        if err != nil {return "", err}
 
         dec, err    := ioutil.ReadAll(md.UnverifiedBody)
-        if err != nil {return nil, err}
+        if err != nil {return "", err}
 
         return string(dec), nil
 }
