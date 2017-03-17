@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 )
 
-type Login struct {
+type SecureData struct {
     Username string `json:"username"`
     Ciphered string `json:"ciphered"`
     Salt     string `json:"salt"`
