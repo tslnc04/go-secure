@@ -4,7 +4,6 @@ import (
         "bytes"
         "golang.org/x/crypto/openpgp"
         "golang.org/x/crypto/openpgp/armor"
-        "fmt"
         "io/ioutil"
         "errors"
 )
