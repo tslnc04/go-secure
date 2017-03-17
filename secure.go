@@ -44,10 +44,10 @@ func Decrypt(coded string, pass string) string, error {
                 }
                 return password, nil
         }, nil)
-        if err != nil {panic(err)}
+        if err != nil {return nil, err}
 
         dec, err    := ioutil.ReadAll(md.UnverifiedBody)
-        if err != nil {panic(err)}
+        if err != nil {return nil, err}
 
         return string(dec), nil
 }
