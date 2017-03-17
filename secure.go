@@ -28,11 +28,14 @@ func randomString(length int) string {
 	return string(b)
 }
 
-func CreateData(username, password , localsalt string) SecureData, error {
-	newsecure := SecureData{Username: username, Salt: randomString(128)}
+/* CreateData
+ *
+ */
+func CreateData(data, localsalt string) SecureData, error {
+	newsecure := SecureData{Salt: randomString(128)}
 
 	h := sha512.New()
-	io.WriteString(h, password + localsalt)
+	io.WriteString(h, data + localsalt)
 
 	ciphered, err := bcrypt.GenerateFromPassword(append(h.Sum(nil), []byte(newsecure.Salt)...), 10)
 	if err != nil {
