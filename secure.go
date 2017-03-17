@@ -45,7 +45,7 @@ func CreateDataLocal(data, localsalt string) SecureData, error {
 
 	newsecure.Secured = string(ciphered)
 
-	return newsecure
+	return newsecure, nil
 }
 
 /* CreateData
@@ -65,5 +65,5 @@ func CreateData(data string) SecureData, error {
 
 	newsecure.Ciphered = string(ciphered)
 
-	return newsecure
+	return newsecure, nil
 }
